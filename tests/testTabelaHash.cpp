@@ -6,8 +6,7 @@
 
 #include "../src/TabelaHash.h"
 #include "gtest/gtest.h"
-#include "chrono"
-#include <unordered_map>
+#include "algorithm"
 using namespace std;
 
 
