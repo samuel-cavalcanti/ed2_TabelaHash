@@ -1,0 +1,60 @@
+language: cpp
+
+env:
+  global:
+    # Ubuntu version
+    - LINUX_DIST=xenial
+    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+    # Global build options and C++ flags
+    - CXX_FLAGS="-Wall -pedantic -Werror -Wno-variadic-macros -Wno-long-long -Wno-shadow"
+    # Misc
+    - RUN_TESTS=true
+    - CODECOV_TOKEN=""
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      sudo: true
+      compiler: gcc
+      addons:
+        apt:
+          packages: &precise_latest_boost_packages
+            - build-essential
+            - libgtest-dev
+            - lcov
+          sources: &precise_latest_boost_sources
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+
+before_install:
+# Combine global build options with OS/compiler-dependent options
+#  - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+#  - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
+install:
+  - project_path="$PWD"
+  - sudo apt-get install cmake libgtest-dev
+#  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90
+  - cd /usr/src/gtest
+  - sudo cmake CMakeLists.txt
+  - sudo make -j4
+  - sudo cp *.a /usr/lib
+  - cd "$project_path"
+
+#  - sudo pip install codecov
+
+
+script:
+  ############################################################################
+  # Build main and tests
+  ############################################################################
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - make -j4
+  - ./runUnitTests
+  - make coverage
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
