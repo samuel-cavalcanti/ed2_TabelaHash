@@ -18,10 +18,6 @@ public:
     K chave;
     V valor;
 
-    bool operator==(const Tupla<K, V> &t) {
-        return t.chave == this->chave;
-    }
-
 
 };
 

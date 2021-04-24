@@ -183,7 +183,7 @@ public:
 
         for (auto it = bucket->begin(); it != bucket->end(); it++) {
             if (it->chave == chave) {
-                bucket->remove(*it);
+                bucket->erase(it);
                 break;
             }
         }
